@@ -1,0 +1,23 @@
+{
+  "video": "C:\\Users\\admin\\AppData\\Local\\Temp\\gradio\\4e4cda3a87ce88364a1c5146dba169196de90f91ae9d8e69a9761f33b6cf9952\\shmvideo5pendulum.mp4",
+  "fps": 30.0,
+  "frames": 148,
+  "width": 1280,
+  "height": 720,
+  "px_per_cm": null,
+  "scale_source": "none (pixels only)",
+  "scale_check": null,
+  "backend": "sam",
+  "prompts": [
+    "wooden block"
+  ],
+  "tracks": {
+    "wooden block#0": {
+      "frames": 117,
+      "coverage": 0.7905405405405406,
+      "t_start": 1.0333333333333334,
+      "t_end": 4.9,
+      "largest_gap_frames": 0
+    }
+  }
+}

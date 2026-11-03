@@ -1,0 +1,32 @@
+{
+  "video": "C:\\Users\\admin\\AppData\\Local\\Temp\\gradio\\a7b1e85b53cf4b676bd3578ad0f1e6930aec789fb0825263dee5de421d4a83cf\\test_pendulum.mp4",
+  "fps": 60.0,
+  "frames": 600,
+  "width": 1280,
+  "height": 720,
+  "px_per_cm": 10.033670033670035,
+  "scale_source": "\"blue rectangle\" at 0.00 s, long side 29.7 cm",
+  "scale_check": {
+    "long_side_px": 298.0,
+    "short_side_px": 211.0,
+    "long_side_cm": 29.7,
+    "short_side_cm": 21.0,
+    "sides_disagree_by": 0.0014,
+    "reference_confidence": 0.8552036285400391,
+    "reference_time_s": 0.0,
+    "reference_prompt": "blue rectangle"
+  },
+  "backend": "sam",
+  "prompts": [
+    "red ball"
+  ],
+  "tracks": {
+    "red ball#0": {
+      "frames": 600,
+      "coverage": 1.0,
+      "t_start": 0.0,
+      "t_end": 9.983333333333333,
+      "largest_gap_frames": 0
+    }
+  }
+}

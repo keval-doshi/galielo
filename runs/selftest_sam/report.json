@@ -1,0 +1,84 @@
+{
+  "report": {
+    "experiment": "Simple pendulum",
+    "headline": "Measured g = 9.805 ± 0.053 m/s², just 0.01% below the reference 9.80665 m/s².",
+    "law": "θ(t) = θ0·e^(−γt)·cos(2πt/T + φ), with T ≈ 2π√(L/g) corrected for finite amplitude, so g = 4π²L/T_small²",
+    "results": [
+      {
+        "quantity": "Gravitational acceleration g",
+        "value": 9.80544,
+        "unit": "m/s²",
+        "uncertainty": 0.0534847,
+        "note": "From hand length L=55.0 cm and period; uncertainty dominated by ±0.3 cm length (±0.55%), period timing is negligible"
+      },
+      {
+        "quantity": "Period T (at 12.9° amplitude)",
+        "value": 1.49285,
+        "unit": "s",
+        "uncertainty": 1.75761e-05,
+        "note": "Small-angle period 1.48808 s used for g after amplitude correction"
+      },
+      {
+        "quantity": "Arc radius (video cross-check of length)",
+        "value": 55.1218,
+        "unit": "cm",
+        "uncertainty": 0.552867,
+        "note": "Agrees with hand-measured 55.0 cm within uncertainty"
+      },
+      {
+        "quantity": "Damping rate γ",
+        "value": 0.0301558,
+        "unit": "1/s",
+        "uncertainty": 5.49826e-05,
+        "note": "From damped-cosine fit to θ(t); quality factor ~70 from pendulum fit"
+      }
+    ],
+    "comparisons": [
+      {
+        "model": "Damped pendulum: A*exp(-k*t)*cos(w*t+p) on theta",
+        "bic": -8377.67,
+        "rms": 0.000529777,
+        "verdict": "Strongly preferred; R²=0.999989, matches pendulum fit"
+      },
+      {
+        "model": "Undamped pendulum: A*cos(w*t+p) on theta",
+        "bic": -4870.45,
+        "rms": 0.0124123,
+        "verdict": "Rejected; BIC worse by ~3507 (>>10, decisive) because amplitude visibly decays"
+      }
+    ],
+    "data_quality": [
+      "Full coverage: 600/600 frames, no gaps, t=0-9.98 s; fit window 0.717-9.983 s (557 points)",
+      "Scale check excellent: blue sheet long side 10.034 px/cm vs short side 10.048 px/cm, agree within 0.1%",
+      "Path follows a circular arc with rms 0.0095 cm and radius 55.12 cm vs hand 55.0 cm",
+      "No warnings from pendulum fit; angle rms 0.029°"
+    ],
+    "explanation": "A red ball on a 55 cm string swings back and forth like a clock pendulum. Its swing angle follows a cosine wave whose height slowly shrinks because of air resistance and friction. Timing about six and a half swings very precisely gives the period, and combining that period with the string length gives gravity. The result, 9.805 ± 0.053 m/s², matches the accepted value 9.807 m/s², with the hand-measured string length limiting the accuracy.",
+    "best_plot": "fit_pendulum_red-ball-0.png",
+    "next_steps": [
+      "Measure the string length to the bob centre more precisely than ±0.3 cm, e.g. with a caliper/tape under tension, to cut the main uncertainty",
+      "Use a smaller release angle (<5°) to reduce the finite-amplitude correction",
+      "Film for longer to average more periods and watch damping over more cycles"
+    ]
+  },
+  "meta": {
+    "model": "muse-wonder-1.0",
+    "effort": null,
+    "steps": 3,
+    "tool_calls": 4,
+    "seconds": 34.9,
+    "usage_tokens": {
+      "input": 13804,
+      "cached": 5748,
+      "output": 3590,
+      "reasoning": 2202
+    },
+    "cost_usd_estimate": 0.1282,
+    "notes": "string 55.0 cm from the knot to the bob centre",
+    "plots": [
+      "fit_pendulum_red-ball-0.png",
+      "eq_1_red-ball-0.png",
+      "eq_2_red-ball-0.png"
+    ]
+  }
+}

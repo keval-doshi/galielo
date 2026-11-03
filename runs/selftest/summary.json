@@ -1,0 +1,22 @@
+{
+  "video": "C:\\Users\\admin\\Downloads\\overengineered\\overengineered\\test_pendulum.mp4",
+  "fps": 60.0,
+  "frames": 600,
+  "width": 1280,
+  "height": 720,
+  "px_per_cm": 10.067340067340067,
+  "scale_source": "\"sheet of paper\", long side 29.7 cm",
+  "backend": "color",
+  "prompts": [
+    "bob"
+  ],
+  "tracks": {
+    "bob#0": {
+      "frames": 600,
+      "coverage": 1.0,
+      "t_start": 0.0,
+      "t_end": 9.983333333333333,
+      "largest_gap_frames": 0
+    }
+  }
+}

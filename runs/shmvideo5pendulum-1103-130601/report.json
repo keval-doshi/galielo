@@ -1,0 +1,96 @@
+{
+  "report": {
+    "experiment": "Rigid pendulum — rod with a wooden block",
+    "headline": "Using the lab length of 33 cm and a measured period of 1.1596 s, the pendulum gives g = 9.80 ± 0.09 m/s², in agreement with the standard 9.80665 m/s².",
+    "law": "θ(t) = θ0·e^(−γt)·cos(2πt/T + φ), with T = 2π√(L/g) including a finite-amplitude correction; here L = 33 cm and amplitude θ0 ≈ 17.5°",
+    "results": [
+      {
+        "quantity": "Gravitational acceleration, g",
+        "value": 9.80278,
+        "unit": "m/s²",
+        "uncertainty": 0.089165,
+        "note": "From pendulum fit with L = 33.0 ± 0.3 cm; uncertainty is dominated by the ±0.3 cm (±0.9%) length uncertainty, the period contribution is negligible. 0.04% below standard g."
+      },
+      {
+        "quantity": "Oscillation period, T",
+        "value": 1.15959,
+        "unit": "s",
+        "uncertainty": 0.000173479,
+        "note": "Measured over the fitted window 1.633–4.900 s; small-angle period from the same fit is 1.15282 s, showing the finite-amplitude correction at 17.5° matters at the ~0.6% level."
+      },
+      {
+        "quantity": "Swing amplitude",
+        "value": 17.5178,
+        "unit": "degrees",
+        "note": "Initial angular amplitude from the pendulum fit; moderate amplitude, so the finite-amplitude pendulum model is preferred over a pure cosine."
+      },
+      {
+        "quantity": "Damping rate",
+        "value": 0.0060612,
+        "unit": "1/s",
+        "note": "Corresponds to a quality factor Q ≈ 447, i.e. very light damping over the ~3 observed cycles; damping is therefore poorly constrained compared with the period."
+      },
+      {
+        "quantity": "Arc radius of tracked block centroid",
+        "value": 522.471,
+        "unit": "px",
+        "note": "Geometric distance from fitted pivot to the tracked wooden-block centroid. For this rigid pendulum this is not the given 33 cm pivot-to-centre-of-mass/effective length, so it was not used as a pixel-to-cm calibration and any difference is not an error."
+      }
+    ],
+    "comparisons": [
+      {
+        "model": "Pendulum fit (fit_model, L = 33 cm, finite amplitude)",
+        "rms": 0.0015,
+        "verdict": "Best physical description: angle RMS 0.086° (0.0015 rad), arc RMS 0.41 px, no warnings; gives g = 9.803 ± 0.089 m/s². No BIC is returned by fit_model."
+      },
+      {
+        "model": "Damped cosine θ = A·exp(−γt)·cos(ωt + p) on angle",
+        "bic": -853.2,
+        "rms": 0.0122538,
+        "verdict": "Favoured over the undamped cosine by ΔBIC = 7.6, which is suggestive but not decisive (decisive is >10). RMS is in rad. It is only a small-angle approximation to the pendulum motion."
+      },
+      {
+        "model": "Undamped cosine θ = A·cos(ωt + p) on angle",
+        "bic": -845.636,
+        "rms": 0.0130299,
+        "verdict": "Slightly worse than the damped cosine (ΔBIC = 7.6) and worse than the finite-amplitude pendulum fit; its near-competitiveness is consistent with very light damping over only about three cycles."
+      }
+    ],
+    "data_quality": [
+      "Tracking is clean: 117 points from 1.033 to 4.900 s with no gaps (largest gap 0 frames); the fit used 99 points from 1.633 to 4.900 s, starting 0.2 s after the 1.433 s release.",
+      "Fit residuals are small: arc RMS 0.41 px and angular RMS 0.086°, with no fit warnings.",
+      "There is no pixel scale in this run. This does not affect g because the period is scale-free and the lab length L = 33 cm was supplied; however the result relies entirely on that length, whose ±0.3 cm uncertainty dominates the ±0.09 m/s² error on g.",
+      "Only about three cycles are observed, so the period is precise but the small damping rate/Q is weakly constrained.",
+      "The 522 px arc radius is the pivot-to-tracked-block-centroid distance for a rigid rod-plus-block pendulum, not the given centre-of-mass/effective length, so it was not converted with the 33 cm value."
+    ],
+    "explanation": "A wooden block on a rod swings back and forth like a clock pendulum, completing one swing every 1.16 seconds. Because the time for a pendulum swing depends on its length and on gravity, combining that very precise timing with the lab-measured 33 cm length gives the strength of gravity. The result, 9.80 ± 0.09 metres per second squared, matches the accepted Earth value. The swing barely fades during the video, showing friction and air resistance are very small here.",
+    "next_steps": [
+      "Measure the effective pendulum length more precisely than ±0.3 cm, since this dominates the uncertainty in g.",
+      "Film many more cycles to pin down the tiny damping and improve the period further.",
+      "Add an independent ruler scale in the plane of swing to convert the 522 px arc radius to centimetres as a geometric cross-check (while keeping it distinct from the centre-of-mass length).",
+      "Repeat at a smaller release angle to verify the finite-amplitude correction."
+    ],
+    "best_plot": "fit_pendulum_wooden-block-0.png"
+  },
+  "meta": {
+    "model": "muse-wonder-1.0",
+    "effort": null,
+    "steps": 3,
+    "tool_calls": 4,
+    "seconds": 70.2,
+    "usage_tokens": {
+      "input": 12870,
+      "cached": 5236,
+      "output": 6472,
+      "reasoning": 4599
+    },
+    "cost_usd_estimate": 0.182,
+    "notes": "Rigid pendulum: a rod with a wooden block on the end. 33 cm from the pivot to the centre of mass (given by the lab)",
+    "plots": [
+      "fit_pendulum_wooden-block-0.png",
+      "eq_1_wooden-block-0.png",
+      "eq_2_wooden-block-0.png"
+    ],
+    "scale_set_by_galileo": null
+  }
+}

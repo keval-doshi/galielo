@@ -1,0 +1,23 @@
+{
+  "model": "pendulum",
+  "g_cm_s2": 982.4053350755174,
+  "g_err_cm_s2": 9.852707184502485,
+  "g_vs_standard_pct": 0.17746478925193543,
+  "length_cm": 55.1036804626527,
+  "length_err_cm": 0.5526424341190409,
+  "length_source": "radius of the traced arc",
+  "period_s": 1.4928646124183107,
+  "period_err_s": 1.7846487290664784e-05,
+  "period_small_angle_s": 1.4880749836579705,
+  "amplitude_deg": 12.983245730734955,
+  "damping_per_s": 0.03002318145145284,
+  "pivot_cm": [
+    63.77599660673857,
+    68.06854325354834
+  ],
+  "arc_rms_cm": 0.009582269494995748,
+  "angle_rms_deg": 0.030326320376814552,
+  "points": 567,
+  "warnings": [],
+  "track": "red ball#0"
+}
