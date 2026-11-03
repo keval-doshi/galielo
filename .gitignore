@@ -1,0 +1,7 @@
+.env
+.venv/
+__pycache__/
+runs/
+*.mp4
+*.mov
+physics_params.json

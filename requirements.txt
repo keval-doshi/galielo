@@ -1,0 +1,10 @@
+openai>=1.60
+meta-sam-parser>=0.1.0
+numpy
+scipy
+opencv-python
+matplotlib
+imageio-ffmpeg
+python-dotenv
+gradio==6.31.0
+reportlab==5.1.0
