@@ -1,220 +1,175 @@
-# Overengineered / Galileo
+# Galileo
 
-Film something moving. **SAM 3.1** tracks it, **Muse Wonder** works out the physics.
+**Film something moving. SAM 3.1 tracks it, Muse Wonder finds the physical law behind the motion
+and measures it, with an honest error bar.**
 
-```
-app.py             the Galileo page: upload a video, see tracking, the law and the measured numbers
-galileo.py         the same agent from the command line, on a run tracked with track.py
-track.py           video -> SAM 3.1 masks -> tracks.csv, plot.png, overlay.mp4 (cm and seconds)
-fit.py             one physics model by hand (pendulum, freefall, projectile, ramp, dominoes...)
-check_api.py       is my key working, are the models there?
-make_test_clip.py  synthetic videos with a known answer (to test without filming)
-oe/                the library: API calls, masks, scale, motion analysis, physics, the agent
-```
+Measuring gravity in a school lab usually takes photogates or a stopwatch and many repeats. Galileo
+needs a video and one length you know. It turns a phone clip, a lab recording or a video from the
+web into a real experiment: the law, the number, the uncertainty, and a PDF lab report that shows
+how it got there.
 
-Commands below are for Windows (PowerShell or Command Prompt) inside the activated `.venv`.
+Built for the Meta Global AI Developer Hackathon (2026) with **SAM 3.1**, **Muse Wonder** and
+**Muse Spark** on the Meta Model API.
 
----
+**Demo video:** https://youtu.be/REPLACE_ME (2 min)
+**Example report:** [docs/example-report.pdf](docs/example-report.pdf), made by the app from the run below
 
-# Tuesday: Galileo
+![Galileo after measuring g from a 5-second pendulum video](docs/result.png)
 
-## Step 1 — Update (5 min)
+## A real lab video, 5 seconds long
 
-Extract the new zip over your old folder and choose **Replace the files in the destination**.
-Your `.env` (API key) and `runs\` folder are kept, because they are not in the zip. Then:
+[Video 5 of the University of Toronto's simple harmonic motion videos](https://practicals.physics.utoronto.ca/practicals/document/162/):
+a rigid pendulum (a rod with a wooden block). The lab page gives one number: 33 cm from the pivot to
+the centre of mass. No ruler is used.
 
-```
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-That adds Gradio (the web page). Your old runs still work with every tool.
-
-## Step 2 — Galileo on your self-test run (no new SAM cost)
-
-```
-python galileo.py runs\selftest_sam --note "string 55.0 cm from the knot to the bob centre"
-```
-
-You will see Muse Wonder think out loud, call fitting tools, compare candidate laws and finish
-with a report: `runs\selftest_sam\report.md`, plus `agent_transcript.md` (how it got there) and
-its fit plots. Expect g ≈ 9.81 m/s². The last line shows roughly what the run cost.
-
-If Wonder is slow, add `--effort medium`, or use `--model muse-spark-1.3` (cheaper and faster).
-
-## Step 3 — The app
-
-```
-python app.py
-```
-
-Your browser opens http://127.0.0.1:7860.
-
-- **Re-analyse:** pick `selftest_sam` under *Previous run* → **Analyse this run**.
-- **New video:** drop your clip in, type what moves ("orange ball"), and type anything you
-  measured in *What you measured by hand* (string length; ramp height and length). Then press
-  **Track and analyse**. The log shows every step. The tabs show the SAM 3.1 tracking video,
-  the paths, the scale check and how Galileo worked it out.
-
-Each new video costs one SAM 3.1 tracking call per prompt plus one Galileo run. Re-analysing a
-previous run only costs the Galileo run.
-
-## Step 4 — Your real clips
-
-Film them as in Monday's Step 3 below, then either use the app, or:
-
-```
-python track.py pendulum.mov --prompt "orange ball" --out runs\pendulum1
-python galileo.py runs\pendulum1 --note "string 61.5 cm from the knot to the bob centre"
-
-python track.py ramp.mov --prompt "marble" --out runs\ramp1
-python galileo.py runs\ramp1 --note "ruler ramp 30 cm long, raised 8.2 cm at one end; glass marble"
-
-python track.py dominoes.mov --prompt "domino" --out runs\dominoes1
-python galileo.py runs\dominoes1 --note "dominoes 4.8 cm tall, about 3 cm apart"
-```
-
-What Galileo can fit: pendulum (g, damping), springs and other oscillators (period, damping,
-spring constant when you give the mass), free fall and projectile (g), ramp (acceleration,
-rolling resistance or friction, and what kind of ball it is), constant velocity, domino wave
-speed, plus any equation it writes itself (compared by BIC).
-
-**Good result:** g within about 2–3% of 9.81 on a real pendulum. With a tape-measured string
-length, the pendulum is usually better than 1%, because the period comes from timing alone.
-
-## Any video: where the scale comes from
-
-Times and angles never need a scale; lengths, speeds and accelerations do. In the app, pick
-**Where the real-world scale comes from**:
-
-| Choice | When | Command-line equivalent |
-|---|---|---|
-| A4 / US Letter sheet, metre stick, 30 cm ruler | it is fully visible in the plane of the motion | `--ref-prompt "meter stick" --ref-long-cm 100 --ref-short-cm 0` |
-| Other object of known size | e.g. a scale bar, a credit card (8.56 cm), a door | `--ref-prompt "credit card" --ref-long-cm 8.56 --ref-short-cm 5.4` |
-| No reference | you know a length instead: write it in the notes | `--no-scale` |
-| I know the scale | you measured pixels per cm on the original video | `--px-per-cm 22.3` |
-
-With **no reference**, everything is tracked in pixels and Galileo calibrates from your notes:
-a pendulum with a known length needs no scale at all, and for anything else it measures the
-known length (drop height, ramp length, distance between marks) in pixels and calls
-`set_scale`. The report says how it calibrated.
-
-Example, a real lab video (University of Toronto, rigid pendulum, 33 cm pivot to centre of mass):
-
-```
-python track.py shmvideo5pendulum.mp4 --prompt "wooden block" --no-scale --out runs\toronto5
-python galileo.py runs\toronto5 --note "Rigid pendulum: a rod with a wooden block. 33 cm from the pivot to the centre of mass (given by the lab)."
-```
-
-Expect g ≈ 9.8 m/s² from a period of about 1.16 s.
-
-## Step 5 — Safety net before 7 PM
-
-1. **Push the code to GitHub.** `.gitignore` already keeps `.env`, videos and `runs\` out.
-   ```
-   git init
-   git add .
-   git commit -m "Galileo: SAM 3.1 tracking + Muse Wonder physics agent"
-   ```
-   Then create an empty repo on github.com and follow its "push an existing repository" lines.
-2. **Record a rough 1-minute backup demo.** Screen-record the app (Win + Alt + R with the Xbox
-   Game Bar, or the Snipping Tool's video mode). Upload the pendulum clip, show the tracking
-   tab, then the result. With this, you have a complete submission whatever happens tomorrow.
-
-## Done for today when
-
-- [ ] Galileo produced a report for `selftest_sam` and for your real pendulum
-- [ ] the app works end to end on a real clip
-- [ ] code pushed, backup demo recorded
-
-Next (Tuesday evening): the digital twin. A side photo of your desk becomes a 2D physics scene
-(SAM 3.1 masks → shapes in a simulator), the first step of the Rube Goldberg machine.
-
----
-
-# Monday: video in, physics out
-
-## Set up (15 min)
-
-```
-cd overengineered
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-```
-
-(macOS/Linux: `python3 -m venv .venv`, `source .venv/bin/activate`, `cp .env.example .env`.)
-
-Get your key: **dev.meta.ai → Model API dashboard → API keys → create**. Paste it into `.env`
-as `MODEL_API_KEY=...` (it looks like `LLM|123...|...`). Then `python check_api.py`: every line
-should say `[ok]`. If a model is missing, check the list it prints and set the right ID in `.env`
-(e.g. `SPARK_MODEL=...`).
-
-## Self-test (10 min)
-
-```
-python make_test_clip.py pendulum
-python track.py test_pendulum.mp4 --prompt "red ball" --ref-prompt "blue rectangle" --out runs\selftest_sam
-python fit.py runs\selftest_sam --model pendulum
-```
-
-Expect g ≈ 9.82 ± 0.10 m/s² (true 9.807). Offline, without the API:
-`python track.py test_pendulum.mp4 --backend color --prompt bob --color "#d32f2f" --ref-color "#3d85c6" --out runs\selftest`.
-`make_test_clip.py` can also make `ramp`, `drop` and `projectile` clips.
-
-## Filming
-
-**Camera rules (these matter more than anything else):**
-- Phone on a stand or propped still, **landscape**, never handheld. Don't zoom or move it mid-clip.
-- Lens at the height of the motion, pointing **straight at it**, 1.5–2 m away, 1× lens (not ultra-wide).
-- **Normal video at 60 fps** if your phone allows it, **not slow-motion** (slow-motion files
-  confuse the timing). Bright light, plain background that contrasts with the object.
-- Keep each clip under 20 s.
-
-**The calibration moment (gives the cm scale):** at the start of each clip, hold a flat **A4 sheet
-in the same plane as the motion** (e.g. touching the pendulum string), facing the camera, fully
-visible, for about a second. Then move it away and start. A sheet even 20 cm behind the motion
-throws the scale off by ~10%. (US Letter: add `--ref-long-cm 27.94 --ref-short-cm 21.59`, or pick
-it in the app.)
-
-1. **Pendulum** — a string 50–80 cm long tied to a shelf or door frame, with a small heavy,
-   brightly coloured bob. Pull it about 15° to the side, let go, and record 10+ swings. Measure
-   the string from the knot to the centre of the bob with a tape.
-2. **Ramp** — a ruler or stiff cardboard on a stack of books, a marble or small ball rolling down.
-   Measure the height and length of the ramp.
-3. **Dominoes** — 5–10 dominoes, cards or thin books standing in a line, knocked over.
-
-## Tracking tips
-
-`--start 1.5 --end 14` trims (the calibration moment must still be inside, or use `--ref-time`).
-`--prompt` can be given more than once. `--fresh` calls SAM again instead of reusing the cached
-answer. `--px-per-cm 9.8` skips the sheet. Prompts are short noun phrases, **one concept per
-prompt**; every instance found becomes its own track (`domino#0`, `domino#1`, ...). API limits:
-up to 16 tracked objects per frame and 15,000 frames per video.
-
-Check, in this order: `ref_check.png` (is the outlined shape exactly the sheet; do the two sides
-agree within ~3%?), `overlay.mp4` (does the mask stay on the object?), and the `tracks:` lines
-(coverage 90%+).
-
-| Problem | Fix |
+| | |
 |---|---|
-| "could not find sheet of paper" | Sheet fully visible at `--ref-time`? Try `--ref-prompt "white paper"`, or `--px-per-cm` |
-| Sides disagree by >4% | Sheet tilted or bent; hold it flat, facing the camera |
-| Coverage low / object lost | More specific prompt ("small orange ball"), more light, plainer background, less blur |
-| Wrong object tracked | More specific prompt; or choose the track with `--track "ball#1"` in fit.py |
-| Many extra tracks | Normal for "domino"; for a single object, use a more specific phrase |
+| What I typed | What moves: `wooden block`. What I know: `33 cm from the pivot to the centre of mass` |
+| SAM 3.1 | tracked the block in every frame from 1.03 s to 4.90 s, no gaps |
+| Muse Wonder | recognised a rigid pendulum, fitted it with its tools, compared three candidate laws |
+| **Result** | **g = 9.803 ± 0.089 m/s²**, 0.04% from standard gravity (9.80665), inside the error bar |
+| Also measured | period 1.15959 ± 0.00017 s, amplitude 17.5°, damping 0.0061 /s (Q ≈ 447) |
+| Cost and time | 3 model calls, 4 tool calls, 70 s, about $0.18 of Muse Wonder usage |
 
-## Fitting by hand
+The error bar is honest: Galileo reports that it comes almost entirely from the ±0.3 cm uncertainty
+of the length, because timing from video is very precise. It also explains why the tracked arc
+radius (522 px) is not the 33 cm effective length of a rigid pendulum, instead of treating the
+difference as an error.
 
-`fit.py` picks the time window by itself (from just after release to the end of that motion phase):
+## How it works
+
+```mermaid
+flowchart LR
+    V[Video] --> S["SAM 3.1<br/>mask of the object<br/>in every frame"]
+    S --> T["Tracks<br/>position vs time<br/>(cm or pixels)"]
+    T --> W["Muse Wonder as Galileo<br/>an experimental physicist<br/>with fitting tools"]
+    W -- "fit_model, fit_equation,<br/>get_samples, set_scale" --> F["Physics and fitting code<br/>NumPy, SciPy"]
+    F --> W
+    W --> R["Report and PDF<br/>law, value ± error,<br/>every step of the reasoning"]
+```
+
+1. **Track (SAM 3.1).** The clip is uploaded through the Files API and SAM 3.1 segments the object
+   named by a short prompt ("wooden block", "orange ball") in every frame, streaming its masks back.
+   Galileo turns the masks into centroid tracks and an overlay video. If a reference object is in
+   view (an A4 sheet, a metre stick), SAM 3.1 also segments it on one frame to set the centimetre
+   scale. Leave the prompt empty and **Muse Spark** looks at the first frame and picks what to track.
+2. **Analyse (Muse Wonder).** Muse Wonder gets an overview of the tracks, your notes and three images
+   (calibration frame, tracking frame, paths). It then works like an experimental physicist with five
+   tools: look at raw samples, fit a standard model, fit any law it writes itself, set the scale from
+   a known length, and submit the report. It must test at least one alternative law and compare them
+   by BIC, and it may only use numbers that come from the tools.
+3. **Report.** The result, the fit with its residuals, SAM's tracking, all results, the laws compared,
+   data quality, next steps and the full reasoning trail, on the page and as a PDF.
+
+What makes the numbers trustworthy:
+
+- **Uncertainties are propagated, not guessed.** Length and scale uncertainties are included, the
+  pendulum fit applies the finite-amplitude correction, and residuals are checked for structure.
+- **No ruler needed.** A length in your notes is enough: a pendulum with a known length needs no scale
+  at all, and for anything else Galileo measures that length in pixels and calibrates itself.
+- **Safe custom laws.** Equations written by the model are parsed with a whitelisted syntax tree and
+  fitted by multi-start least squares. Nothing it writes is executed.
+- **Reproducible runs.** Every run folder keeps the tracks, SAM's raw answers, plots, report.json and
+  the agent transcript, so a run can be re-analysed without calling SAM again.
+
+## What it can measure
+
+| Motion | What Galileo reports |
+|---|---|
+| Pendulum (string or rigid) | g, period, amplitude, damping and Q |
+| Spring or anything oscillating | period, damping, Q; spring constant when you give the mass |
+| Free fall, projectile | g |
+| Ball or block on a ramp | acceleration, rolling resistance or friction, what kind of ball it is |
+| Constant velocity, domino chain | speed, wave speed |
+| Anything else | the law Galileo writes itself, compared with alternatives by BIC |
+
+## Run it
+
+Python 3.10 or newer. FFmpeg comes with the `imageio-ffmpeg` package, so there is nothing else to
+install.
 
 ```
-python fit.py runs\pendulum1 --model pendulum --length-cm 61.5
-python fit.py runs\ramp1 --model incline-roll --angle-deg 15.8
-python fit.py runs\drop1 --model freefall
-python fit.py runs\dominoes1 --model domino-wave --track domino
+git clone <this repo>
+cd <repo folder>
+python -m venv .venv
+.venv\Scripts\activate              (macOS/Linux: source .venv/bin/activate)
+pip install -r requirements.txt
+copy .env.example .env              (macOS/Linux: cp .env.example .env)
 ```
 
-Error bars include a 1% cm-scale uncertainty (`--scale-err-pct`). Calibrated numbers are saved
-to `physics_params.json` for the simulator.
+Paste your Meta Model API key into `.env` as `MODEL_API_KEY=...` (dev.meta.ai, Model API dashboard),
+then:
+
+```
+python check_api.py     # every line should say [ok]
+python app.py           # opens http://127.0.0.1:7860
+```
+
+In the page: 1. drop in a video, 2. say what moves, 3. type what you know (a length, a height, a
+mass), 4. say where the scale comes from, then press **Track and analyse**. When it finishes,
+**Download the PDF report** saves the lab report.
+
+**Try the example above:** download
+[shmvideo5pendulum.mp4](https://practicals.physics.utoronto.ca/media/uploads/2020/10/08/shmvideo5pendulum.mp4),
+then use What moves `wooden block`, What you know `Rigid pendulum: a rod with a wooden block on the
+end. 33 cm from the pivot to the centre of mass (given by the lab).` and the scale option
+**No reference: Galileo uses the lengths in my notes**.
+
+**Without filming anything:** `python make_test_clip.py pendulum` makes a synthetic clip with a known
+answer (g = 9.807 m/s², L = 55 cm, an A4 sheet for the scale). On it, Galileo measured
+g = 9.805 ± 0.053 m/s² with the length given.
+
+### Command line
+
+```
+python track.py clip.mp4 --prompt "wooden block" --no-scale --out runs/toronto5
+python galileo.py runs/toronto5 --note "33 cm from the pivot to the centre of mass"
+python fit.py runs/toronto5 --model pendulum --length-cm 33
+```
+
+`track.py` writes tracks.csv, overlay.mp4, plot.png and summary.json. `galileo.py` writes report.md,
+report.json, agent_transcript.md, the fit plots and `galileo-report-<run>.pdf`. `fit.py` fits one
+model by hand. Scale options: `--ref-prompt "meter stick" --ref-long-cm 100` (an object of known size
+in the video), `--px-per-cm 22.3` (a scale you measured) or `--no-scale` (lengths from your notes).
+
+## Filming your own experiment
+
+- Phone on a stand, landscape, pointing straight at the motion from 1.5 to 2 m. Never handheld.
+- Normal video, 60 fps if possible, not slow motion. Bright light, plain background.
+- Measure one length by hand (string length, drop height, ramp length) and type it in the notes.
+  Or hold an A4 sheet in the plane of the motion for a second at the start.
+
+## Project layout
+
+```
+app.py             the Galileo web app (Gradio)
+track.py           video -> SAM 3.1 masks -> tracks, overlay video, scale check
+galileo.py         the Muse Wonder agent from the command line
+fit.py             one physics model by hand
+check_api.py       is the key working, are the models there
+make_test_clip.py  synthetic videos with known answers
+oe/
+  meta_api.py      Meta Model API: SAM 3.1 (image and streaming video), Muse Spark, Files API
+  masks.py         SAM 3.1 output -> masks and centroids (meta-sam-parser)
+  agent.py         Galileo: system prompt, tools, agent loop, report
+  analysis.py      overview of a run, automatic time windows, model fitting on a run
+  physics.py       pendulum, oscillator, free fall, projectile, ramp, dominoes
+  equations.py     safe parsing and fitting of laws the model writes
+  motion.py        release detection, periods, motion hints
+  report.py        the result readout and the PDF report
+  scale.py, video.py, plots.py, draw.py, config.py
+```
+
+## Limits
+
+- The camera must not move, and the motion should be in a plane facing the camera. A reference object
+  must be in that plane; 20 cm in front or behind changes the scale by about 10%.
+- SAM 3.1 accepts up to 15,000 frames and 16 objects per frame. Galileo trims and resizes clips to
+  1280 px before tracking.
+- Galileo reports what the data supports: without any scale or known length, it gives only
+  scale-free results (periods, angles, timings) and says what measurement would complete them.
+
+## Credits
+
+Pendulum video: "Videos of Simple Harmonic Motion", Physics Undergraduate Practicals, University of
+Toronto (recorded by Professor Harlow). It is linked here, not included in this repository.
